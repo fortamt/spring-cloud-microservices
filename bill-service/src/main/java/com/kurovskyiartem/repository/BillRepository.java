@@ -1,9 +1,9 @@
 package com.kurovskyiartem.repository;
 
-import com.kurovskyiartem.entity.Account;
+import com.kurovskyiartem.entity.Bill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface BillRepository extends JpaRepository<Bill, Long> {
 }
