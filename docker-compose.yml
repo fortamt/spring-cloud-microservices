@@ -1,0 +1,121 @@
+version: '3.5'
+services:
+  config-service:
+    container_name: config-service
+    build: config-service
+    ports:
+      - "8001:8001"
+    networks:
+      - microservices
+
+  registry:
+    container_name: registry
+    restart: always
+    build: registry
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-service
+    networks:
+      - microservices
+
+  gateway:
+    container_name: gateway
+    restart: always
+    build: gateway
+    ports:
+      - "8989:8989"
+    depends_on:
+      - config-service
+      - registry
+    networks:
+      - microservices
+
+  account-service:
+    restart: on-failure
+    container_name: account-service
+    build: account-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - config-service
+      - registry
+      - postgres
+    networks:
+      - microservices
+
+  bill-service:
+    restart: on-failure
+    container_name: bill-service
+    build: bill-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - config-service
+      - registry
+      - postgres
+    networks:
+      - microservices
+
+  deposit-service:
+    restart: on-failure
+    container_name: deposit-service
+    build: deposit-service
+    ports:
+      - "9090:9090"
+    depends_on:
+      - config-service
+      - registry
+      - postgres
+    networks:
+      - microservices
+
+  notification-service:
+    restart: on-failure
+    container_name: notification-service
+    build: notification-service
+    depends_on:
+      - config-service
+      - registry
+    networks:
+      - microservices
+
+  rabbitmq: # login guest:guest
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    labels:
+      NAME: "rabbitmq"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    depends_on:
+      - config-service
+      - registry
+      - account-service
+    networks:
+      - microservices
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    volumes:
+      - "postgres:/var/lib/postgresql/data/"
+      - "./pg-init-scripts:/docker-entrypoint-initdb.d"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_MULTIPLE_DATABASES: account_service_database, bill_service_database, deposit_service_database
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - microservices
+
+
+networks:
+  microservices:
+    driver: bridge
+
+volumes:
+  postgres: {}
+  pgadmin: {}
