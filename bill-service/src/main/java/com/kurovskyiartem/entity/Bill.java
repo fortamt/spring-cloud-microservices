@@ -25,15 +25,15 @@ public class Bill {
     private Long accountId;
     private BigDecimal amount;
     private Boolean isDefault;
-    private OffsetDateTime offsetDateTime;
+    private OffsetDateTime creationDate;
     private Boolean overdraftEnabled;
 
     public Bill(Long accountId, BigDecimal amount, Boolean isDefault,
-                OffsetDateTime offsetDateTime, Boolean overdraftEnabled) {
+                OffsetDateTime creationDate, Boolean overdraftEnabled) {
         this.accountId = accountId;
         this.amount = amount;
         this.isDefault = isDefault;
-        this.offsetDateTime = offsetDateTime;
+        this.creationDate = creationDate;
         this.overdraftEnabled = overdraftEnabled;
     }
 
